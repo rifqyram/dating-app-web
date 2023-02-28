@@ -13,7 +13,6 @@ export default function Setup() {
         if (steps.length - 1 === activeStep) return;
         setActiveStep((prevActiveStep) => {
             let number = prevActiveStep + 1;
-            saveStep(number);
             return number;
         });
     };
@@ -21,18 +20,11 @@ export default function Setup() {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => {
             let number = prevActiveStep - 1;
-            saveStep(number);
             return number;
         });
     };
 
-    const saveStep = (activeStep) => {
-        sessionStorage.setItem('activeStep', activeStep.toString())
-    }
-
     useEffect(() => {
-        let activeStep = +sessionStorage.getItem('activeStep');
-        if (activeStep) setActiveStep(activeStep);
     }, [])
 
     const formContent = (step) => {
@@ -49,8 +41,8 @@ export default function Setup() {
     }
 
     return (
-        <Container sx={{mb: 4}}>
-            <Stepper sx={{mb: 4}} activeStep={activeStep}>
+        <Container sx={{minHeight: '100vh'}}>
+            <Stepper sx={{my: 4}} activeStep={activeStep}>
                 {steps.map((label, index) => {
                     const stepProps = {};
                     const labelProps = {};

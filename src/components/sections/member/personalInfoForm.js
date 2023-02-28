@@ -1,24 +1,17 @@
 import {useEffect} from "react";
-import {
-    Box,
-    Button,
-    FormHelperText,
-    Grid,
-    MenuItem,
-    TextField,
-    Typography
-} from "@mui/material";
-import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
-import {LocalizationProvider, MobileDatePicker} from "@mui/x-date-pickers";
-import moment from "moment";
 import {usePersonalInfo} from "hooks/usePersonalInfo";
 import anonymousProfilePicture from 'assets/images/avatar_anonymous.jpeg'
+
+import moment from "moment";
+import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
+import {LocalizationProvider, MobileDatePicker} from "@mui/x-date-pickers";
+import {Box, Button, FormHelperText, Grid, MenuItem, TextField, Typography} from "@mui/material";
 
 export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
     const {
         formik: {values, errors, touched, setFieldValue, handleChange, handleSubmit},
         previewImage,
-        errorPicture,
+        errors: myErrors,
         fetchPersonalInformation,
         handleFileChange
     } = usePersonalInfo({handleNext});
@@ -43,7 +36,7 @@ export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
                                  loading='lazy'/>
                         </Grid>
                         <Grid container item xs={12} justifyContent='center'>
-                            <Button variant='contained' component='label'>
+                            <Button variant='contained' component='label' sx={{fontWeight: 'bold'}}>
                                 Choose Picture
                                 <input
                                     onChange={e => handleFileChange(e)}
@@ -54,7 +47,7 @@ export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
                         </Grid>
                         <Grid container item xs={12} justifyContent='center'>
                             <FormHelperText
-                                error={Boolean(errorPicture.profilePicture)}>{errorPicture.profilePicture}</FormHelperText>
+                                error={Boolean(myErrors && myErrors.profilePicture)}>{myErrors && myErrors.profilePicture}</FormHelperText>
                         </Grid>
                     </Grid>
                     <Grid item md={8} xs={12}>
@@ -65,7 +58,7 @@ export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
                                            value={values.name}
                                            name='name'
                                            label="Name"
-                                           error={Boolean(errors.name)}
+                                           error={Boolean(errors.name) && touched.name}
                                            helperText={touched.name &&
                                            Boolean(errors.name) ?
                                                errors.name :
@@ -82,7 +75,7 @@ export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
                                     value={values.gender}
                                     name='gender'
                                     label="Select Gender"
-                                    error={Boolean(errors.gender)}
+                                    error={Boolean(errors.gender) && touched.gender}
                                     helperText={touched.gender &&
                                     Boolean(errors.gender) ?
                                         errors.gender :
@@ -107,7 +100,7 @@ export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
                                                 fullWidth
                                                 name='bod'
                                                 size='small'
-                                                error={Boolean(errors.bod)}
+                                                error={Boolean(errors.bod) && touched.bod}
                                                 helperText={touched.bod &&
                                                 Boolean(errors.bod) ?
                                                     errors.bod :
@@ -121,7 +114,7 @@ export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
                                 <TextField fullWidth
                                            onChange={handleChange}
                                            value={values.city}
-                                           error={Boolean(errors.city)}
+                                           error={Boolean(errors.city) && touched.city}
                                            helperText={touched.city &&
                                            Boolean(errors.city) ?
                                                errors.city :
@@ -137,7 +130,7 @@ export default function PersonalInfoForm({activeStep, handleNext, handleBack}) {
                                     multiline
                                     onChange={handleChange}
                                     value={values.selfDescription}
-                                    error={Boolean(errors.selfDescription)}
+                                    error={Boolean(errors.selfDescription && touched.selfDescription)}
                                     helperText={touched.selfDescription &&
                                     Boolean(errors.selfDescription) ?
                                         errors.selfDescription :

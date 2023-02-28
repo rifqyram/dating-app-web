@@ -1,46 +1,71 @@
+import {useEffect} from "react";
 import {Box, Button, Grid, TextField, Typography} from "@mui/material";
+import useContactInfo from "../../../hooks/useContactInfo";
 
 export default function ContactInfoForm({activeStep, handleNext, handleBack}) {
-    return(
-        <>
+    const {formik, fetchContactInfo} = useContactInfo({handleNext});
+
+    useEffect(() => {
+        fetchContactInfo();
+    }, []);
+
+
+    return (
+        <Box component='form' onSubmit={e => formik.handleSubmit(e)}>
             <Grid container justifyContent='center' mb={4}>
                 <Typography variant='p' typography='h5' fontWeight='bold'>
                     Contact Information Form
                 </Typography>
             </Grid>
-            <Grid container>
+            <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
                     <TextField fullWidth
-                               required
+                               onChange={formik.handleChange}
+                               value={formik.values.mobilePhoneNumber}
+                               error={formik.touched.mobilePhoneNumber &&
+                                   Boolean(formik.errors.mobilePhoneNumber)}
+                               helperText={formik.touched.mobilePhoneNumber &&
+                               Boolean(formik.errors.mobilePhoneNumber) ?
+                                   formik.errors.mobilePhoneNumber :
+                                   'Please input your mobile phone number'}
+                               name='mobilePhoneNumber'
                                size='small'
-                               id="outlined"
                                label="Mobile Phone"
-                               helperText="Please input your mobile phone number"
                                variant="outlined"/>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField fullWidth
-                               required
+                               onChange={formik.handleChange}
+                               value={formik.values.email}
+                               error={formik.touched.email &&
+                                   Boolean(formik.errors.email)}
+                               helperText={formik.touched.email &&
+                               Boolean(formik.errors.email) ?
+                                   formik.errors.email :
+                                   'Please input your email'}
+                               name='email'
                                size='small'
-                               id="outlined"
                                label="Email"
-                               helperText="Please input your email"
                                variant="outlined"/>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField fullWidth
-                               size='small'
-                               id="outlined"
-                               label="Instagram Id"
+                               onChange={formik.handleChange}
+                               value={formik.values.instagramId}
+                               name='instagramId'
                                helperText="Please input your instagram id"
+                               size='small'
+                               label="Instagram Id"
                                variant="outlined"/>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField fullWidth
-                               size='small'
-                               id="outlined"
-                               label="Twitter Id"
+                               onChange={formik.handleChange}
+                               value={formik.values.twitterId}
+                               name='twitterId'
                                helperText="Please input your twitter id"
+                               size='small'
+                               label="Twitter Id"
                                variant="outlined"/>
                 </Grid>
             </Grid>
@@ -52,10 +77,10 @@ export default function ContactInfoForm({activeStep, handleNext, handleBack}) {
                     sx={{mr: 1}}>
                     Back
                 </Button>
-                <Button onClick={handleNext}>
+                <Button type='submit'>
                     Next
                 </Button>
             </Box>
-        </>
+        </Box>
     );
 }

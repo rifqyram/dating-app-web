@@ -1,9 +1,12 @@
+import {useEffect} from "react";
+
+import {getTokenFromSessionStorage} from "services/auth.service";
+
 import {
+    Autocomplete,
     Box,
     Button,
-    Checkbox,
-    FormControl,
-    FormControlLabel,
+    Chip,
     FormHelperText,
     FormLabel,
     Grid,
@@ -11,132 +14,110 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {useState} from "react";
+import SliderRange from "components/ui/slider-range";
+import usePreference from "hooks/usePreference";
 
 export default function PreferenceForm({activeStep, handleBack}) {
-    const [interests, setInterests] = useState([
-            {
-                label: 'Makan',
-                checked: false
-            },
-            {
-                label: 'Minum',
-                checked: false
-            },
-            {
-                label: 'Boker',
-                checked: false
-            }
-        ]
-    );
+    const {formik, options, fetchInterests, fetchPreference, fetchMemberInterests} = usePreference();
 
-    const handleOnChange = (e) => {
-        const {name} = e.target;
-
-        let findInterest = interests.find(item => item.label === name);
-
-        if (findInterest) {
-            const mapInterest = interests.map(item => {
-                if (item === findInterest) {
-                    item.checked = !item.checked;
-                }
-                return item;
-            });
-            setInterests(mapInterest);
+    useEffect(() => {
+        fetchInterests();
+        if (getTokenFromSessionStorage()) {
+            fetchPreference();
+            fetchMemberInterests();
         }
-    }
+    }, [])
+
 
     return (
-        <>
+        <Box component='form' onSubmit={e => formik.handleSubmit(e)}>
             <Grid container justifyContent='center' mb={4}>
                 <Typography variant='p' typography='h5' fontWeight='bold'>
                     Preference Form
                 </Typography>
             </Grid>
-            <Grid container columnSpacing={2} rowSpacing={1}>
-                <Grid item md={6} xs={12}>
-                    <TextField
-                        required
-                        select
-                        label="Select"
-                        helperText="Please select your interest gender, interest to: male/female"
-                        size='small'
-                        defaultValue='Male'
-                        value='Male'
-                        fullWidth>
-                            <MenuItem value='Male'>Male</MenuItem>
-                            <MenuItem value='Female'>Female</MenuItem>
-                    </TextField>
-                </Grid>
-                <Grid item md={6} xs={12}>
-                    <TextField fullWidth
-                               required
-                               size='small'
-                               id="outlined"
-                               label="City"
-                               helperText="Please input your looking domicile"
-                               variant="outlined"/>
-                </Grid>
-                <Grid item md={3} xs={12}>
-                    <TextField
-                        fullWidth
-                        required
-                        size='small'
-                        id="outlined"
-                        label="Start Age"
-                        type='number'
-                        helperText="Please input your looking starting age, eg: 18 y.o"
-                        variant="outlined"/>
-                </Grid>
-                <Grid item md={3} xs={12}>
-                    <TextField
-                        fullWidth
-                        required
-                        size='small'
-                        id="outlined"
-                        label="Start Age"
-                        type='number'
-                        helperText="Please input your looking end age, eg: 40 y.o"
-                        variant="outlined"/>
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <FormLabel>Interest Age Range</FormLabel>
+                    <SliderRange
+                        name1='lookingForStartAge'
+                        name2='lookingForEndAge'
+                        value={[formik.values.lookingForStartAge, formik.values.lookingForEndAge]}
+                        setValue={formik.setFieldValue}/>
+                    <FormHelperText>Choose your interest age range</FormHelperText>
                 </Grid>
                 <Grid item xs={12}>
-                    <FormControl
-                        required
-                        variant="standard">
-                        <FormLabel component="label">Interest</FormLabel>
-                        <Grid item>
-                            {interests.map((interest, idx) => {
-                                return (
-                                    <FormControlLabel
-                                        key={idx}
-                                        control={
-                                            <Checkbox
-                                                checked={interest.checked}
-                                                onChange={(e) => handleOnChange(e)}
-                                                size='small'
-                                                name={interest.label}/>
-                                        }
-                                        label={interest.label}
-                                    />
-                                );
-                            })}
-                        </Grid>
-                        <FormHelperText>Pick Min: 1</FormHelperText>
-                    </FormControl>
+                    <TextField
+                        fullWidth
+                        select
+                        onChange={formik.handleChange}
+                        value={formik.values.lookingForGender}
+                        error={formik.touched && Boolean(formik.errors.lookingForGender)}
+                        name='lookingForGender'
+                        label="Select Gender"
+                        helperText={formik.touched && Boolean(formik.errors.lookingForGender) ? formik.errors.lookingForGender : 'Please select your interest gender, interest to: male/female'}
+                        size='small'>
+                        <MenuItem value='Male'>Male</MenuItem>
+                        <MenuItem value='Female'>Female</MenuItem>
+                    </TextField>
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField fullWidth
+                               onChange={formik.handleChange}
+                               value={formik.values.lookingForDomicile}
+                               error={formik.touched && Boolean(formik.errors.lookingForDomicile)}
+                               name='lookingForDomicile'
+                               label="City"
+                               helperText={formik.touched && Boolean(formik.errors.lookingForDomicile) ? formik.errors.lookingForDomicile : 'Please input your looking domicile'}
+                               size='small'
+                               variant="outlined"/>
+                </Grid>
+                <Grid item xs={12}>
+                    <Autocomplete
+                        multiple
+                        id="tags-filled"
+                        options={options}
+                        freeSolo
+                        onChange={(e, value) => formik.setFieldValue('interests', value)}
+                        value={[...formik.values.interests]}
+                        renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                                <Chip
+                                    size='small'
+                                    color='primary'
+                                    variant="filled"
+                                    sx={{fontWeight: 'bold'}}
+                                    label={option}
+                                    {...getTagProps({index})}
+                                />
+                            ))
+                        }
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                name='interests'
+                                variant="outlined"
+                                label="Interests"
+                                placeholder="Travelling, Sports, Coding..."
+                                size='small'
+                                error={formik.touched && Boolean(formik.errors.interests)}
+                                helperText={formik.touched && Boolean(formik.errors.interests) ? formik.errors.interests : 'Please input your interests, e.g: Traveling, Coding, Jogging'}
+                            />
+                        )}
+                    />
                 </Grid>
             </Grid>
             <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', pt: 2}}>
                 <Button
                     color="inherit"
                     disabled={activeStep === 0}
-                    onClick={handleBack}
-                    sx={{mr: 1}}>
+                    onClick={handleBack}>
                     Back
                 </Button>
-                <Button>
+                <Button type='submit'>
                     Finish
                 </Button>
             </Box>
-        </>
+        </Box>
     );
 }

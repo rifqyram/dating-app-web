@@ -1,13 +1,21 @@
 import axiosInstance from "api/axiosInstance";
 
-async function register(authRequest) {
-    const {data} = await axiosInstance.post('auth/register', authRequest);
+export async function register(authRequest) {
+    const {data} = await axiosInstance.post('/auth/register', authRequest);
     return data;
 }
 
-async function login(authRequest) {
-    const {data} = await axiosInstance.post('auth/login', authRequest);
+export async function login(authRequest) {
+    const {data} = await axiosInstance.post('/auth/login', authRequest);
     return data;
 }
 
-export {register, login};
+export async function getMyInfo() { // from token
+    const {data} = await axiosInstance.get('/members/me');
+    return data;
+}
+
+export function getTokenFromSessionStorage() {
+    return sessionStorage.getItem('token');
+}
+

@@ -1,25 +1,20 @@
-import 'App.css';
 import 'styles/global.css';
-import Setup from "./pages/setup";
-import {Box, Container, Typography} from "@mui/material";
+import {CssBaseline, ThemeProvider} from "@mui/material";
+import theme from "utils/theme";
+
+import {NotificationProvider} from "context/notificationContext";
+import AppRoutes from "routes";
 
 function App() {
-
     return (
-        <div className="app">
-            <Box sx={{
-                backgroundColor: 'pink',
-                maxWidth: '100%',
-                minHeight: '75px',
-                display: 'flex',
-                alignItems: 'center'
-            }} mb={4}>
-                <Container>
-                    <Typography align='center' component='h2' fontWeight='bold' variant={'h5'}>Eniglove</Typography>
-                </Container>
-            </Box>
-            <Setup/>
-        </div>
+        <NotificationProvider>
+            <ThemeProvider theme={theme}>
+                <CssBaseline/>
+                <NotificationProvider>
+                    <AppRoutes/>
+                </NotificationProvider>
+            </ThemeProvider>
+        </NotificationProvider>
     );
 }
 

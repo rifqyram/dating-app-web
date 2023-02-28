@@ -1,4 +1,4 @@
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "api/axiosInstance";
 
 export async function createNewPersonalInformation(personalInfo) {
     const form = new FormData();
@@ -24,10 +24,6 @@ export async function updatePersonalInformation(personalInfo) {
     }
     const {data} = await axiosInstance.put('/members/personal-info', form);
     return data;
-}
-
-export function getTokenFromSessionStorage() {
-    return sessionStorage.getItem('token');
 }
 
 export async function downloadProfilePicture(filepath) {

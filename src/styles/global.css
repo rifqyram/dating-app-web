@@ -1,7 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Pacifico&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
 .profile-pics {
     border-radius: 50%;
     object-fit: cover;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
     width: 250px;
     height: 250px;
+}
+
+.image-card {
+    width: 100%;
+    aspect-ratio: 9/16;
+    border-radius: 0 0 8px 8px;
+    object-fit: contain;
+    filter: brightness(80%);
+    color: white;
+}
+
+.image-card-list {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: contain;
+}
+
+.image-background-home {
+    width: 100%;
+    object-fit: contain;
 }
